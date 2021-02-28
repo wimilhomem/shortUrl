@@ -1,0 +1,45 @@
+version: "3"
+services:
+  shorturl-app:
+    container_name: shorturl
+    build:
+      context: .
+      dockerfile: .Dockerfile
+    depends_on:
+      - postgres
+    volumes:
+      - ./src:/app/src
+      - ./tsconfig.json:/app/tsconfig.json
+    ports:
+      - "8081:8081"
+    command: npm run dev
+  postgres:
+    container_name: postgres
+    image: postgres:10.4
+    ports:
+      - "5432:5432"
+    volumes: 
+      - ./postgrnpmesdata:/var/lib/postgresql/data
+      - ./src/migrations/dbinit.sql:/docker-entrypoint-initdb.d/dbinit.sql
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: shorturl-db
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:4.18
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: wcsmilhomem@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: secret
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+volumes:
+    db-data:
+    pgadmin-data:
