@@ -4,7 +4,7 @@ import UrlController from './app/controllers/UrlController';
 const routes = Router();
 
 routes.post('/encurtador', UrlController.store);
-routes.get('/:idUrl', UrlController.find);
+routes.get('/:urlHash', UrlController.find);
 routes.get('/', UrlController.find);
 
 

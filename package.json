@@ -7,6 +7,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "ts-node-dev --respawn --respawn --transpile-only src/server.ts",
+    "typeorm": "ts-node-dev ./node_modules/typeorm/cli",
     "tsc": "tsc"
   },
   "devDependencies": {
@@ -15,6 +16,8 @@
     "typescript": "^4.2.2"
   },
   "dependencies": {
-    "express": "^4.17.1"
+    "@types/pg": "^7.14.10",
+    "express": "^4.17.1",
+    "pg": "^8.5.1"
   }
 }

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
+import { DURACAO_RED } from '../../config/configApp';
 
-
+import Url from '../models/Url';
 
 function getStringAleatoria() {
   const min = 5;
@@ -15,34 +16,69 @@ function getStringAleatoria() {
   return retorno;
 }
 class UrlController {
-  async store(req: Request, res: Response) {
+  async store(req: Request, res: Response): Promise<Response> {
     //salva url
-    // const { url } = req.body;
+    const { url } = req.body;
 
-    const host = `${req.protocol}://${req.get('host')}/`;
+    if (!url) {
+      return res.status(400).json({ error: 'url nao informada no body' });
+    }
 
-    const stringAlet = getStringAleatoria();
+    try {
+      const dataExp = new Date();
+      const validadeRedir = DURACAO_RED;//validade do redirecionamento em minutos
+      dataExp.setMinutes(dataExp.getMinutes() + validadeRedir);
+      let stringAleatoria = getStringAleatoria();
 
-    const newUrl = host + stringAlet;
+      let ok = true;
+      do {
+        console.log('existe hash valido?');
+
+        if (!await Url.findOne(stringAleatoria)) {
+          ok = false;
+
+        } else {
+          stringAleatoria = getStringAleatoria();
+        }
+      }
+      while (ok);
+      const urlObj = {
+        urlOriginal: url,
+        codigoUrlCurta: stringAleatoria,
+        dataExpiracao: dataExp,
+
+      };
 
 
+      const urlEntity = new Url(urlObj);
+      const retorno = await urlEntity.save();
+      console.log(retorno);
 
-    return res.status(200).json({ newUrl });
+      const host = `${req.protocol}://${req.get('host')}/`; //monta newUrl
+
+      const newUrl = host + retorno.codigoUrlCurta;
+
+      return res.status(201).json({ newUrl });
+
+    } catch (e) {
+      console.error(e.message);
+      return res.status(500).send();
+
+    }
 
   }
 
-  async find(req: Request, res: Response) {
+  async find(req: Request, res: Response): Promise<Response | void> {
 
-    const { idUrl } = req.params;
-    console.log(req.protocol);
+    const { urlHash } = req.params;
 
 
-    const redirecionaUrl = 'https://www.globo.com';
+    if (!!urlHash) {
+      //busca no banco o hash da url
+      const url = await Url.findOne(urlHash);
 
-    if (idUrl) {
-      //busca no banco a url
-      if (idUrl === 'aaa') {
-        return res.redirect(redirecionaUrl);
+      if (!!url) {
+        return res.redirect(url.urlOriginal);
       } else {
         return res.sendStatus(404);
       }
