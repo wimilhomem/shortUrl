@@ -7,14 +7,13 @@ class Db {
 
   };
 
-  str = process.env.NODE_ENV;
-
   private pool1 = new Pool({
 
 
     //adicionar envconfig
 
-    connectionString: process.env.DATABASE_URL
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
 
   });
 
