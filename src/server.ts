@@ -6,6 +6,6 @@ const app = express();
 app.use(express.json());
 app.use(routes);
 
-console.log(new Date());
+const PORT = process.env.PORT || 8081;
 
-app.listen(8081);
+app.listen(PORT);

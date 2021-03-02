@@ -1,11 +1,12 @@
 import { Router } from 'express';
+import RedirectController from './app/controllers/RedirectController';
 import UrlController from './app/controllers/UrlController';
 
 const routes = Router();
 
 routes.post('/encurtador', UrlController.store);
-routes.get('/:urlHash', UrlController.find);
-routes.get('/', UrlController.find);
+routes.get('/:urlHash', RedirectController.find);
+routes.get('/', RedirectController.find);
 
 
 export default routes;

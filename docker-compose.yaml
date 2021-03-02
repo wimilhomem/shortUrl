@@ -1,4 +1,4 @@
-version: "3"
+version: "3.7"
 services:
   shorturl-app:
     container_name: shorturl
@@ -7,11 +7,15 @@ services:
       dockerfile: .Dockerfile
     depends_on:
       - postgres
-    volumes:
-      - ./src:/app/src
-      - ./tsconfig.json:/app/tsconfig.json
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/shorturl-db
+      NODE_ENV: development
+      PORT: 8081
+    volumes:    
+     - ./src:/app/src
+   #  - ./tsconfig.json:/app/tsconfig.json
     ports:
-      - "8081:8081"
+      - "8081:8081" 
     command: npm run dev
   postgres:
     container_name: postgres

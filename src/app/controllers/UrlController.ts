@@ -1,20 +1,9 @@
 import { Request, Response } from 'express';
 import { DURACAO_RED } from '../../config/configApp';
+import { getStringAleatoria } from '../../utils/utils';
 
 import Url from '../models/Url';
 
-function getStringAleatoria() {
-  const min = 5;
-  const max = 10;
-  const tamanho = Math.floor(Math.random() * (max - min)) + min;
-
-  const charsPossiveis = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let retorno = '';
-  for (let i = 0; i < tamanho; i++) {
-    retorno += charsPossiveis.charAt(Math.floor(Math.random() * charsPossiveis.length));
-  }
-  return retorno;
-}
 class UrlController {
   async store(req: Request, res: Response): Promise<Response> {
     //salva url
@@ -32,8 +21,6 @@ class UrlController {
 
       let ok = true;
       do {
-        console.log('existe hash valido?');
-
         if (!await Url.findOne(stringAleatoria)) {
           ok = false;
 
@@ -52,7 +39,6 @@ class UrlController {
 
       const urlEntity = new Url(urlObj);
       const retorno = await urlEntity.save();
-      console.log(retorno);
 
       const host = `${req.protocol}://${req.get('host')}/`; //monta newUrl
 
@@ -66,26 +52,6 @@ class UrlController {
 
     }
 
-  }
-
-  async find(req: Request, res: Response): Promise<Response | void> {
-
-    const { urlHash } = req.params;
-
-
-    if (!!urlHash) {
-      //busca no banco o hash da url
-      const url = await Url.findOne(urlHash);
-
-      if (!!url) {
-        return res.redirect(url.urlOriginal);
-      } else {
-        return res.sendStatus(404);
-      }
-    }
-
-
-    return res.sendStatus(404);
   }
 
 }

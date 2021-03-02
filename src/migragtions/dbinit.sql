@@ -1,22 +1,3 @@
--- Database: shorturl-db
-
--- DROP DATABASE "shorturl-db";
-
-CREATE DATABASE "shorturl-db"
-    WITH 
-    OWNER = postgres
-    ENCODING = 'UTF8'
-    LC_COLLATE = 'en_US.utf8'
-    LC_CTYPE = 'en_US.utf8'
-    TABLESPACE = pg_default
-    CONNECTION LIMIT = -1;
-
-    -- Table: public.urls
-
-
--- SEQUENCE: public.urls_id_seq
-
--- DROP SEQUENCE public.urls_id_seq;
 
 CREATE SEQUENCE public.urls_id_seq
     INCREMENT 1
