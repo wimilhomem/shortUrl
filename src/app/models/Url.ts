@@ -1,20 +1,16 @@
 import Db from '../../database/connect';
 
-interface IUrl {
-  urlOriginal: string;
-  codigoUrlCurta: string;
-  dataExpiracao: Date;
-}
-
 class Url implements IUrl {
 
 
-  urlOriginal: string; codigoUrlCurta: string; dataExpiracao: Date;
+  originalUrl: string;
+  shortUrl: string;
+  expDate: Date;
 
   constructor(obj: IUrl) {
-    this.urlOriginal = obj.urlOriginal;
-    this.codigoUrlCurta = obj.codigoUrlCurta;
-    this.dataExpiracao = obj.dataExpiracao;
+    this.originalUrl = obj.originalUrl;
+    this.shortUrl = obj.shortUrl;
+    this.expDate = obj.expDate;
   }
 
 
@@ -25,8 +21,8 @@ class Url implements IUrl {
 
     try {
       const result1 = await cliente.query(
-        `INSERT INTO public.urls ("urlOriginal", "codigoUrlCurta", "dataExpiracao") VALUES ($1, $2, $3) RETURNING *`,
-        [this.urlOriginal, this.codigoUrlCurta, this.dataExpiracao],
+        `INSERT INTO public.urls ("originalUrl", "shortUrl", "expDate") VALUES ($1, $2, $3) RETURNING *`,
+        [this.originalUrl, this.shortUrl, this.expDate],
       );
       result = result1.rows[0];
 
@@ -43,21 +39,22 @@ class Url implements IUrl {
 
   }
 
-  static async findOne(codigoUrlCurta: string) {
+  static async findOne(shortUrl: string) {
 
     const db = new Db();
 
     const cliente = await db.conection;
 
-    const dataAtual = new Date(Date.now()).toISOString();
+    const now = new Date(Date.now()).toISOString();
     let result;
-    //const codigoUrlCurta = 's2ElwP';
 
-    try {//busca url que ainda não expirou
-      let result1 = await cliente.query('select * from public.urls where "codigoUrlCurta" =$1 and "dataExpiracao" > $2', [codigoUrlCurta, dataAtual]);
+    //const shortUrl = 's2ElwP';
+
+    try {//find a valid url redirect
+      let result1 = await cliente.query('select * from public.urls where "shortUrl" =$1 and "expDate" > $2', [shortUrl, now]);
       result = result1.rows[0];
     } catch (e) {
-      console.error(e.message, e.stack);
+
       cliente.release(true);
     }
     finally {

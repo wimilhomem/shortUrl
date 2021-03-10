@@ -10,11 +10,12 @@ class RedirectController {
 
 
     if (!!urlHash) {
-      //busca no banco o hash da url
-      const url = await Url.findOne(urlHash);
+      //Find url hash
+      const url: IUrl = await Url.findOne(urlHash);
 
       if (!!url) {
-        return res.redirect(url.urlOriginal);
+
+        return res.redirect(url.originalUrl);//redirect to url
       } else {
         return res.sendStatus(404);
       }

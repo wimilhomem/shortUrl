@@ -1,15 +1,15 @@
 import { MIN_HASH, MAX_HASH } from '../config/configApp';
 
-
-export function getStringAleatoria(): string {
+//generate a random stringHash
+export function getStringHash(): string {
   const min = MIN_HASH;
   const max = MAX_HASH;
-  const tamanho = Math.floor(Math.random() * (max - min)) + min;
+  const size = Math.floor(Math.random() * (max - min)) + min;
 
-  const charsPossiveis = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let retorno = '';
-  for (let i = 0; i < tamanho; i++) {
-    retorno += charsPossiveis.charAt(Math.floor(Math.random() * charsPossiveis.length));
+  const chrs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let hash: string = '';
+  for (let i = 0; i < size; i++) {
+    hash += chrs.charAt(Math.floor(Math.random() * chrs.length));
   }
-  return retorno;
-}
+  return hash;
+} 

@@ -1,4 +1,3 @@
-
 import request from 'supertest';
 import express from 'express';
 import routes from '../routes';
@@ -11,37 +10,36 @@ app.use(routes); //routes
 let server = app.listen();
 
 let urlHash: string;
-let urlRetorno;
+let urlResponse;
 let body = { url: "http://www.google.com" };
 
-let aux: string;
-let aux2;
-describe('Testando rotas', () => {
 
-  test("POST /encurtador - success", async done => {
+describe('Routes', () => {
+
+  test("POST /short - success", async done => {
 
 
-    const response = await request(app).post("/encurtador").send(body);
+    const response = await request(app).post("/short").send(body);
     urlHash = String(JSON.parse(response.text).newUrl).split('/')[3];
-    urlRetorno = JSON.parse(response.text);
-    expect(urlRetorno).toHaveProperty('newUrl');
+    urlResponse = JSON.parse(response.text);
+    expect(urlResponse).toHaveProperty('newUrl');
 
     expect(response.status).toEqual(201);
     done();
   });
 
-  test("GET / - sem parametro", async done => {
+  test("GET / - without params", async done => {
     const body = await request(app).get("/"); //uses the request function that calls on express app instance
     expect(body.status).toEqual(404);//http code 
     done();
   });
-  test("GET / - redireciona urlHash valido", async done => {
+  test("GET /urlHash - redirect valid urlShort", async done => {
     const body = await request(app).get("/" + urlHash); //uses the request function that calls on express app instance
     expect(body.status).toEqual(302);//http code 
     done();
   });
-  test("GET /url - urlHash inexistente", async done => {
-    const body = await request(app).get("/" + 'urlHash123478'); //uses the request function that calls on express app instance
+  test("GET /url - urlHash nonexistent", async done => {
+    const body = await request(app).get("/" + 'urlHash123478');
     expect(body.status).toEqual(404);//http code 
     done();
   });

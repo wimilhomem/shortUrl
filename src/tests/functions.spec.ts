@@ -1,5 +1,5 @@
 import Url from '../app/models/Url';
-import { getStringAleatoria } from '../utils/utils';
+import { getStringHash } from '../utils/utils';
 
 expect.extend({
   toBeWithinRange(received, floor, ceiling) {
@@ -7,25 +7,25 @@ expect.extend({
     if (pass) {
       return {
         message: () =>
-          `esperava ${received} no intervalo determinado!${floor} - ${ceiling}`,
+          `expected  ${received} not to be within range!${floor} - ${ceiling}`,
         pass: true,
       };
     } else {
       return {
         message: () =>
-          `esperava ${received} no intervalo determinado! ${floor} - ${ceiling}`,
+          `expected  ${received}  to be within range! ${floor} - ${ceiling}`,
         pass: false,
       };
     }
   },
 });
 
-describe('Funcao getStringAleatoria()', () => {
+describe('Function getStringHash()', () => {
 
-  test('Retorna string/hash 5a10 caracteres', () => {
+  test('return string/hash within 5-10 range chars', () => {
 
-    //const Url = new Url();
-    const s: string = getStringAleatoria();
+
+    const s: string = getStringHash();
 
 
     expect(s).not.toBeNull();

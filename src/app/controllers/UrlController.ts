@@ -1,53 +1,76 @@
 import { Request, Response } from 'express';
-import { DURACAO_RED } from '../../config/configApp';
-import { getStringAleatoria } from '../../utils/utils';
+import * as yup from 'yup';
+import { getStringHash } from '../../utils/utils';
 
 import Url from '../models/Url';
 
+interface IBodyUrl {
+  url: string;
+  expiresOn?: number;
+}
 class UrlController {
-  async store(req: Request, res: Response): Promise<Response> {
-    //salva url
-    const { url } = req.body;
 
-    if (!url) {
-      return res.status(400).json({ error: 'url nao informada no body' });
+
+  async store(req: Request, res: Response): Promise<Response> {
+
+    let body: IBodyUrl;
+
+    const schema = yup.object()
+      .shape({
+        url: yup.string().required(),
+        expiresOn: yup.number().positive().integer()
+      })
+      .noUnknown(true);
+
+
+    try {
+      //validate json from body
+      body = await schema.validate(req.body);
+    } catch (error) {
+
+      return res.status(400).json({ error });
+
     }
+
 
     try {
       const dataExp = new Date();
-      const validadeRedir = DURACAO_RED;//validade do redirecionamento em minutos
+      const validadeRedir = body.expiresOn ? body.expiresOn : 30;//redirect expiration time:default 30 minutes
       dataExp.setMinutes(dataExp.getMinutes() + validadeRedir);
-      let stringAleatoria = getStringAleatoria();
+      let ramdomHashString = getStringHash();
 
-      let ok = true;
+      let ok: boolean = true;
       do {
-        if (!await Url.findOne(stringAleatoria)) {
+        //build a valid urlHash
+        if (!await Url.findOne(ramdomHashString)) {
           ok = false;
 
         } else {
-          stringAleatoria = getStringAleatoria();
+          ramdomHashString = getStringHash();
         }
       }
       while (ok);
+
       const urlObj = {
-        urlOriginal: url,
-        codigoUrlCurta: stringAleatoria,
-        dataExpiracao: dataExp,
+        originalUrl: body.url,
+        shortUrl: ramdomHashString,
+        expDate: dataExp,
 
       };
 
 
       const urlEntity = new Url(urlObj);
-      const retorno = await urlEntity.save();
 
-      const host = `${req.protocol}://${req.get('host')}/`; //monta newUrl
+      const result = await urlEntity.save();
 
-      const newUrl = host + retorno.codigoUrlCurta;
+      const host = `${req.protocol}://${req.get('host')}/`; //build newUrl
+
+      const newUrl = host + result.shortUrl;
 
       return res.status(201).json({ newUrl });
 
     } catch (e) {
-      console.error(e.message);
+
       return res.status(500).send();
 
     }

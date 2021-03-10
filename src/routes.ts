@@ -4,7 +4,7 @@ import UrlController from './app/controllers/UrlController';
 
 const routes = Router();
 
-routes.post('/encurtador', UrlController.store);
+routes.post('/short', UrlController.store);
 routes.get('/:urlHash', RedirectController.find);
 routes.get('/', RedirectController.find);
 

@@ -5,5 +5,10 @@ declare global {
       toBeWithinRange(a: number, b: number): R;
     }
   }
+  interface IUrl {
+    originalUrl: string;
+    shortUrl: string;
+    expDate: Date;
+  }
 }
 
